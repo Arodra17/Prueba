@@ -46,11 +46,11 @@
     </style>
   </head>
   <body>
- 
+
     <div id="floating-panel">
 	<form>
 		<select id="sel">
-		  <option name="Pedro Valle Mendoza" type="text" value="42.581631, -5.596929999999929"> Inicio</option>	
+		  <option name="Pedro Valle Mendoza" type="text" value="42.581631, -5.596929999999929"> Inicio</option>
 		  <option name="Pedro Valle Mendoza" type="text" value="48.8667, 2.33333"> Pedro Valle Mendoza</option>
 		  <option name="Carlos Medrán López" type="text" value="44.4168600, 44.4168600"> Carlos Medrán López </option>
 		  <option name="Mario Sobrín Val" type="text" value="35.6895000, 139.6917100"> Mario Sobrín Val </option>
@@ -59,32 +59,47 @@
 	</form>
     </div>
     <div id="map"></div>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js">
+</script>
     <script>
+    var map;
+  var geoJSON;
+  var request;
+  var gettingData = false;
+  var openWeatherMapKey = "023f724f8e31f45924a32f5b22d9279a"
       function initMap() {
 	  var tecnosylva = {lat: 42.581631, lng: -5.596929999999929};
-        var map = new google.maps.Map(document.getElementById('map'), {
+        map = new google.maps.Map(document.getElementById('map'), {
           zoom: 20,
           center: tecnosylva
         });
+
 		 map.addListener('rightclick', function(e) {
           placeMarkerAndPanTo(e.latLng, map);
+
         });
         var geocoder = new google.maps.Geocoder;
         var infowindow = new google.maps.InfoWindow;
+
         document.getElementById('submit').addEventListener('click', function() {
           geocodeLatLng(geocoder, map, infowindow);
         });
+
       }
-	  
+
 	  //Función para agregar marcadores.
 	  function placeMarkerAndPanTo(latLng, map) {
         var marker = new google.maps.Marker({
           position: latLng,
           map: map
         });
-        map.panTo(latLng);
+        var infowindow = new google.maps.InfoWindow;
+        infowindow.setContent('hola');
+        infowindow.open(map, marker);
+        //map.panTo(latLng);
       }
-	  
+
+
 	  //función para la geolocalización.
       function geocodeLatLng(geocoder, map, infowindow) {
         var input = document.getElementById('sel').value;
@@ -108,6 +123,7 @@
           }
         });
       }
+
     </script>
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCM7hasjO7siQ0qXqmN25Z7wID4blV_7Ks&callback=initMap">
