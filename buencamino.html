@@ -59,25 +59,21 @@
 	</form>
     </div>
     <div id="map"></div>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js">
+</script>
+
     <script>
-      var map = null;
-      var infowindow = null;
-      var geoJSON;
-      var request;
-      var gettingData = false;
-      var openWeatherMapKey = "023f724f8e31f45924a32f5b22d9279a"
       function initMap() {
-        //  var infowindow = new google.maps.InfoWindow;
 	  var tecnosylva = {lat: 42.581631, lng: -5.596929999999929};
-        map = new google.maps.Map(document.getElementById('map'), {
+        var map = new google.maps.Map(document.getElementById('map'), {
           zoom: 20,
           center: tecnosylva
         });
-        infowindow = new google.maps.InfoWindow();
 		 map.addListener('rightclick', function(e) {
           placeMarkerAndPanTo(e.latLng, map);
         });
         var geocoder = new google.maps.Geocoder;
+        var infowindow = new google.maps.InfoWindow;
 
         document.getElementById('submit').addEventListener('click', function() {
           geocodeLatLng(geocoder, map, infowindow);
@@ -87,18 +83,37 @@
 
 	  //Función para agregar marcadores.
 	  function placeMarkerAndPanTo(latLng, map) {
-      var prueba = latLng.lat();
-      var pruebi = latLng.lng();
+        var prueba = latLng.lat();
+        var pruebi = latLng.lng();
+        var apiKey = '72693d2665b9836b01205af6327639ca';
         var marker = new google.maps.Marker({
           position: latLng,
           draggable: true,
           map: map
         });
-        var infowindow = new google.maps.InfoWindow;
-        infowindow.setContent([prueba+'     '+pruebi].join(''));
+
+        var contentString = '<div id="content">'+
+      '<div id="siteNotice">'+
+      '</div>'+
+      '<h1 id="firstHeading" class="firstHeading">Forecast: </h1>'+
+      '<div id="bodyContent">'+
+      //'<iframe width="800" height="220" src="https://embed.windyty.com/embed2.html?lat=42.581631&lon=-5.596929999999929&type=forecast&metricWind=kt&metricTemp=%C2%B0C  frameborder="0"></iframe>'+
+    //'<iframe id="forecast_embed1" type="text/html" frameborder="0" height="245" width="100%" src="http://forecast.io/#/f/prueba,pruebi&color=#00aaff&font=Georgia&units=si"></iframe>'+
+'<iframe name="iFrame" width="536" height="701" src="http://forecast.io/#/f/prueba,pruebi" scrolling="no" frameborder="0"></iframe>'+
+      '</div>'+
+      '</div>';
+
+  var infowindow = new google.maps.InfoWindow({
+      content: contentString
+  });
+
+
         infowindow.open(map, marker);
 
+
       }
+
+
 	  //función para la geolocalización.
       function geocodeLatLng(geocoder, map, infowindow) {
         var input = document.getElementById('sel').value;
@@ -127,5 +142,6 @@
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCM7hasjO7siQ0qXqmN25Z7wID4blV_7Ks&callback=initMap">
     </script>
+
   </body>
 </html>
