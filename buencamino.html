@@ -40,6 +40,16 @@
         padding: 5px;
         border: 1px solid #999;
       }
+      .controls {
+        margin-top: 10px;
+        border: 1px solid transparent;
+        border-radius: 2px 0 0 2px;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        height: 32px;
+        outline: none;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      }
       #latlng {
         width: 225px;
       }
@@ -56,6 +66,7 @@
 		  <option name="Mario Sobrín Val" type="text" value="35.6895000, 139.6917100"> Mario Sobrín Val </option>
 		 </select>
 		  <input id="submit" type="button" value="Buscar cliente">
+
 	</form>
     </div>
     <div id="map"></div>
@@ -70,12 +81,16 @@
           zoom: 20,
           center: tecnosylva
         });
+
+
+      //Capturador de evento click derecho añado marcador y me da predicción
 		 map.addListener('rightclick', function(e) {
           placeMarkerAndPanTo(e.latLng, map);
         });
         var geocoder = new google.maps.Geocoder;
         var infowindow = new google.maps.InfoWindow;
 
+        //Búsqueda inversa para clientes
         document.getElementById('submit').addEventListener('click', function() {
           geocodeLatLng(geocoder, map, infowindow);
         });
@@ -131,7 +146,8 @@ function placeMarkerAndPanTo(latLng, map) {
           success: data => {
 
             var viento = Math.round(data["wind"]["speed"] *(3600/1609.344));
-            alert("El nombre de la población es: " + data["name"] +"\n"+"El país es: " + data["sys"]["country"] +"\n"+  "La temperatura es: "+  data["main"]["temp"]+ "ºC"+"\n"+"La humedad es del: "+  data["main"]["humidity"]+"%"  +"\n"+"La probabilidad de lluvia es del: " + data["clouds"].all+"%"+"\n" + "La presión es de: " + data["main"]["pressure"] +"\n"+
+            alert("El nombre de la población es: " + data["name"] +"\n"+"El país es: " + data["sys"]["country"] +"\n"+  "La temperatura es: "+  data["main"]["temp"]+ "ºC"+"\n"+"La humedad es del: "+  data["main"]["humidity"]+"%"  +"\n"+"La probabilidad de lluvia es del: " +
+            data["clouds"].all+"%"+"\n" + "La presión es de: " + data["main"]["pressure"] +"hpa"+"\n"+
               "La velocidad del viento es: " + viento+"Km/h");
 
           }
