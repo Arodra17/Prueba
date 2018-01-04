@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Prueba Tecnosylva</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #floating-panel {
+        position: absolute;
+        top: 10px;
+        left: 25%;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+        text-align: center;
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+      }
+      #floating-panel {
+        position: absolute;
+        top: 5px;
+        left: 50%;
+        margin-left: -180px;
+        width: 350px;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+      }
+      #floating-panel2 {
+        position: absolute;
+        top: 5px;
+        left: 25%;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+        text-align: center;
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+      }
+
+      .controls {
+        margin-top: 10px;
+        border: 1px solid transparent;
+        border-radius: 2px 0 0 2px;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        height: 32px;
+        outline: none;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      }
+      #latlng {
+        width: 225px;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div id="floating-panel">
+	<form>
+		<select id="sel">
+		  <option name="Pedro Valle Mendoza" type="text" value="42.581631, -5.596929999999929"> Inicio</option>
+		  <option name="Pedro Valle Mendoza" type="text" value="48.8667, 2.33333"> Pedro Valle Mendoza</option>
+		  <option name="Carlos Medrán López" type="text" value="55.7522200, 37.6155600"> Carlos Medrán López </option>
+		  <option name="Mario Sobrín Val" type="text" value="35.6895000, 139.6917100"> Mario Sobrín Val </option>
+		 </select>
+		  <input id="submit" type="button" value="Buscar cliente">
+
+	</form>
+    </div>
+      <div id="floating-panel2">
+        <input id="address" type="textbox" value="Tecnosylva, León">
+        <input id="submit2" type="button" value="Buscar localización">
+      </div>
+    <div id="map"></div>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js">
+</script>
+
+    <script>
+      let API_KEY  = '023f724f8e31f45924a32f5b22d9279a';
+      function initMap() {
+	  var tecnosylva = {lat: 42.581631, lng: -5.596929999999929};
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 20,
+          center: tecnosylva
+        });
+
+
+        var infowindow = new google.maps.InfoWindow;
+        //Búsqueda de localización
+        var geocoder2 = new google.maps.Geocoder();
+        document.getElementById('submit2').addEventListener('click', function() {
+          geocodeAddress(geocoder2, map, infowindow);
+        });
+
+      //Capturador de evento click derecho añado marcador y me da predicción
+		 map.addListener('rightclick', function(e) {
+          placeMarkerAndPanTo(e.latLng, map);
+        });
+        var geocoder = new google.maps.Geocoder;
+
+
+        //Búsqueda inversa para clientes
+        document.getElementById('submit').addEventListener('click', function() {
+          geocodeLatLng(geocoder, map, infowindow);
+        });
+
+
+      }
+	  //Función para agregar marcadores.
+function placeMarkerAndPanTo(latLng, map) {
+        var infowindow = new google.maps.InfoWindow;
+        var prueba = latLng.lat();
+        var pruebi = latLng.lng();
+        var marker = new google.maps.Marker({
+         position: latLng,
+         draggable: true,
+         map: map
+       });
+        getWeather(prueba, pruebi, marker, infowindow);
+
+}
+
+function getWeather(latitude, longtitude, marker, infowindow) {
+
+
+        $.ajax({
+          url: 'http://api.openweathermap.org/data/2.5/weather',
+          data: {
+            lat: latitude,
+            lon: longtitude,
+            units: 'metric',
+            APPID: API_KEY
+          },
+          success: data => {
+
+
+            var viento = Math.round(data["wind"]["speed"] *(3600/1609.344));
+            infowindow.setContent('<h3>Tiempo actual:'+'</h3><p>El nomre de la población es: '+ data["name"]+'</p><p>El país es: '+ data["sys"]["country"]+'</p>'+'<p>La temperatura es: '+ data["main"]["temp"]+ "ºC"+'</p><p>La humedad es del: '+ data["main"]["humidity"]+"%"+'</p><p>La probabilidad de lluvia es del: '+ data["clouds"].all+"%"+
+            '</p><p>La presión es de: ' + data["main"]["pressure"] +"hpa"+'</p>'+'<p>La velocidad del viento es: '+ viento+"Km/h"+'</p>');
+            infowindow.open(map,marker);
+
+/* Para que salga con el alert de prueba
+            alert("El nombre de la población es: " + data["name"] +"\n"+"El país es: " + data["sys"]["country"] +"\n"+  "La temperatura es: "+  data["main"]["temp"]+ "ºC"+"\n"+"La humedad es del: "+  data["main"]["humidity"]+"%"  +"\n"+"La probabilidad de lluvia es del: " +
+            data["clouds"].all+"%"+"\n" + "La presión es de: " + data["main"]["pressure"] +"hpa"+"\n"+
+              "La velocidad del viento es: " + viento+"Km/h");
+*/
+          }
+        })
+
+
+
+  }
+
+
+
+	  //función para la geolocalización.
+function geocodeLatLng(geocoder, map, infowindow) {
+        var input = document.getElementById('sel').value;
+        var latlngStr = input.split(',', 2);
+        var latlng = {lat: parseFloat(latlngStr[0]), lng: parseFloat(latlngStr[1])};
+        geocoder.geocode({'location': latlng}, function(results, status) {
+          if (status === 'OK') {
+            if (results[1]) {
+              map.setZoom(11);
+              var marker = new google.maps.Marker({
+                position: latlng,
+                map: map,
+              });
+              getWeather(results[1].geometry.location.lat(), results[1].geometry.location.lng(), marker, infowindow);
+
+            } else {
+              window.alert('No hay resultados.');
+            }
+          } else {
+            window.alert('Debe introducir un cliente.');
+          }
+        });
+
+}
+function geocodeAddress(geocoder2, resultsMap, infowindow) {
+        var address = document.getElementById('address').value;
+        geocoder2.geocode({'address': address}, function(results, status) {
+          if (status === 'OK') {
+            resultsMap.setCenter(results[0].geometry.location);
+            var marker = new google.maps.Marker({
+              map: resultsMap,
+              position: results[0].geometry.location
+            });
+            getWeather(results[0].geometry.location.lat(), results[0].geometry.location.lng(), marker, infowindow);
+          } else {
+            alert('No se han encontrado localizaciones para la ubicación introducida');
+          }
+        });
+
+      }
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCgmzS_A-WOEliffIdlK7lplLLI5QkJO-c&callback=initMap">
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  </body>
+</html>
